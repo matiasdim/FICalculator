@@ -1,0 +1,7 @@
+
+
+
+<%= form_tag({controller: "application", action: "calculation"}, method: "post", :multipart => true) do  %>
+    <label for="file">Upload text File</label> <%= file_field_tag "file" %>
+    <%= submit_tag 'Submit' %>
+<% end %>
