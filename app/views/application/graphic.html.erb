@@ -3,5 +3,11 @@ SENTENCES = <%= @sentences %> <br/>
 WORDS = <%= @words %> <br/>
 SYLLABLES = <%= @syllables %> <br/>
 <br/>
-Histogram showing how many words we have per number of syllables: <br/>
+Absolute frequency histogram showing how many words we have per number of syllables (Horizontally are the number of syllables and vertically is the number of words): <br/>
 
+<%= column_chart @data_with_format, stacked: true %>
+<br/>
+<br/>
+Absolute frequency histogram showing the percentage of words per number of syllables (Horizontally are the number of syllables and vertically is percentage): <br/>
+
+<%= column_chart @percentage_data, stacked: true %>
