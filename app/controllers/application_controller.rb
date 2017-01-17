@@ -6,9 +6,13 @@ class ApplicationController < ActionController::Base
   end
 
   def calculation
-    uploaded_file = params[:file]
 
-    file_content = uploaded_file.read
+    
+
+    file_content = File.read(params[:file].path, :encoding => 'UTF-8')
+
+    #file_content = uploaded_file #uploaded_file.read.force_encoding('UTF-8')
+
 
     sentences_num = sentences_count(file_content)
     words_num = word_count(file_content)
@@ -16,7 +20,7 @@ class ApplicationController < ActionController::Base
 
     #Formatting data to draw the histogram: Creating a hash with data values and frequency
     data_with_format =Hash[histogram_data.group_by{ |y| y }.map{|val,array| [val, array.size] }]
-    #Geting % of frequence of number of Syllables per word
+    #Geting % of previous frequences
     percentage_data = Hash.new
     data_with_format.each do |key,value|
       
@@ -60,6 +64,8 @@ class ApplicationController < ActionController::Base
     syllables = 0
 
     @words.each do |word|
+      word = word.downcase
+
       word_syllables = 0
       vowel_in_latest = false
       word.split("").each do |char|
@@ -75,12 +81,19 @@ class ApplicationController < ActionController::Base
         end
         vowel_in_latest = false unless vowel_found
       end
+      
+      if word_syllables == 0
+        #byebug
+      end
+
+
       #remove 'es' ending and silent 'e'
       if word.length > 2 && word[-2..-1] == 'es'|| word.length > 1 && word[-1..-1] == 'e'
         syllables -= 1 
         word_syllables -= 1
       end
-      
+
+
       histogram_data << word_syllables if word_syllables
     end
     [syllables, histogram_data]
