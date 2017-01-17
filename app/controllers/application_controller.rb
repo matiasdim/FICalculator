@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
   def home
+    @words = []
 
   end
 
@@ -53,23 +54,55 @@ If your senators are Republicans, tell them you’re part of the large majority 
 
 That’s what this is really about. It’s not about Obama or Trump or Congress. It’s about making sure that every citizen of the world’s most powerful country can receive modern medical care."
 
-  sentences_num = sentences_count(file_content)
+    sentences_num = sentences_count(file_content)
+    words_num = word_count(file_content)
+    syllables_num = syllabes_count
 
+    @fi = 206.835 - 84.6 * (syllables_num/words_num) - 1.015 *(words_num/sentences_num)
+    puts "NUMBER OF FI: " + @fi.to_s + " !!!!!!!!!!!!!"
 
   end
 
   private
 
   def sentences_count(text)
-    sentences = text.split(/((\.)\2*)/) #(/[.?!]/)
-    print sentences.count.to_s + " !!!!!!!!!!!!!"
+    sentences = text.split(/[.?!]/)
+    print "NUMBER OF SENTENCES: " + sentences.count.to_s + " !!!!!!!!!!!!!"
+    sentences.count
   end
 
   def word_count(text)
-
+    @words = text.split(" ")
+    print "NUMBER OF WORDS: " + @words.count.to_s + " !!!!!!!!!!!!!"
+    @words.count
   end
 
-  def syllabes_count(text)
+  def syllabes_count
+    #algorithm improved based on one part of this http://stackoverflow.com/a/5615724
 
+    vowels = ["a", "e", "i", "o", "u"]
+    syllables = 0
+
+    @words.each do |word|
+      vowel_in_latest = false
+      word.split("").each do |char|
+        vowel_found = false
+        vowels.each do |vowel|
+          if char == vowel
+            syllables += 1 unless vowel_in_latest
+            vowel_found = true
+            vowel_in_latest = true
+            break
+          end
+        end
+        vowel_in_latest = false unless vowel_found
+      end
+      #remove 'es' ending
+      syllables -= 1 if word.length > 2 && word[-2..-1] == 'es'
+      #remove silent 'e'
+      syllables -= 1 if word.length > 1 && word[-1..-1] == 'e'
+    end
+    print "NUMBER OF SYLLABLES: " + syllables.to_s + " !!!!!!!!!!!!!"
+    syllables
   end
 end
